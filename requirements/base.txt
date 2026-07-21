@@ -1,0 +1,8 @@
+PyYAML
+python-dotenv
+pydantic
+loguru
+requests
+faker
+numpy
+pandas
