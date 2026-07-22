@@ -6,3 +6,4 @@ requests
 faker
 numpy
 pandas
+Faker==...
