@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from src.utils import PathManager
 
 
 class Logger:
@@ -14,8 +15,9 @@ class Logger:
         if cls._configured:
             return
 
-        log_dir = Path("logs")
-        log_dir.mkdir(exist_ok=True)
+        PathManager.create_directories()
+
+        log_dir = PathManager.LOG_DIR
 
         formatter = logging.Formatter(
             "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
