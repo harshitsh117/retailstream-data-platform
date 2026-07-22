@@ -1,0 +1,15 @@
+application:
+  name: RetailStream Data Platform
+  version: 0.1.0
+  environment: development
+  timezone: Asia/Kolkata
+
+processing:
+  batch_size: 10000
+  output_format: parquet
+  max_parallel_jobs: 4
+
+paths:
+  datasets: datasets/
+  logs: logs/
+  temp: temp/
