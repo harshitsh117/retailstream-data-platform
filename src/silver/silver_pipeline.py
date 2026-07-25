@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.data_access.data_loader import DataLoader
+from src.data_access.bronze_loader import BronzeLoader
 from src.project_logging.logger import Logger
 from src.silver.silver_writer import SilverWriter
 
@@ -45,10 +45,10 @@ class SilverPipeline:
         )
 
         loader_mapping = {
-            "customers": DataLoader.load_customers,
-            "products": DataLoader.load_products,
-            "orders": DataLoader.load_orders,
-            "order_items": DataLoader.load_order_items,
+            "customers": BronzeLoader.load_customers,
+            "products": BronzeLoader.load_products,
+            "orders": BronzeLoader.load_orders,
+            "order_items": BronzeLoader.load_order_items,
         }
 
         for dataset_name, transformer in self.transformers.items():
