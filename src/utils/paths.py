@@ -17,6 +17,7 @@ class PathManager:
     BRONZE_DIR = DATASET_DIR / "bronze"
     SILVER_DIR = DATASET_DIR / "silver"
     GOLD_DIR = DATASET_DIR / "gold"
+    # GOLD_DIR = DATASETS_DIR / "gold"
 
     @classmethod
     def create_directories(cls) -> None:

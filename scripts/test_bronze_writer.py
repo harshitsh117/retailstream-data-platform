@@ -1,19 +1,21 @@
-from src.bronze.bronze_writer import BronzeWriter
-from src.data_access.data_loader import DataLoader
+from spark.bronze.bronze_reader import BronzeReader
+from spark.bronze.bronze_writer import BronzeWriter
 
 
 def main():
 
+    reader = BronzeReader()
     writer = BronzeWriter()
 
-    customers = DataLoader.load_customers()
+    df = reader.read_csv("datasets/raw/customers.csv")
 
-    writer.write(
-        dataframe=customers,
+    writer.write_parquet(
+        df=df,
+        output_path="datasets/bronze/customers",
         dataset_name="customers",
     )
 
-    print("Bronze dataset written successfully.")
+    print("Bronze write completed.")
 
 
 if __name__ == "__main__":
