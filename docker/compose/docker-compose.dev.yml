@@ -13,3 +13,27 @@ services:
 
     stdin_open: true
     tty: true
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+
+    container_name: retailstream-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: retailstream
+      POSTGRES_USER: retailstream
+      POSTGRES_PASSWORD: retailstream
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

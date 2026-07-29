@@ -1,0 +1,11 @@
+warehouse:
+  host: postgres
+  port: 5432
+
+  database: retailstream
+  username: retailstream
+  password: retailstream
+
+  driver: org.postgresql.Driver
+
+  jdbc_url: jdbc:postgresql://postgres:5432/retailstream
