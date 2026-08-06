@@ -1,0 +1,17 @@
+pyspark==3.5.6
+delta-spark==3.2.0
+
+pandas
+numpy
+pyarrow
+
+PyYAML
+python-dotenv
+loguru
+
+psycopg2-binary
+
+pytest
+black
+isort
+mypy

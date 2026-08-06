@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: warehouse
+    description: "RetailStream Data Warehouse"
+
+    database: retailstream
+    schema: public
+
+    tables:
+
+      - name: dim_customer
+        description: Customer Dimension
+
+      - name: dim_product
+        description: Product Dimension
+
+      - name: dim_date
+        description: Date Dimension
+
+      - name: fact_sales
+        description: Sales Fact Table

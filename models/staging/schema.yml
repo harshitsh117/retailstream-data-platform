@@ -1,0 +1,73 @@
+version: 2
+
+models:
+
+  - name: stg_customer
+    description: Customer dimension
+
+    columns:
+
+      - name: customer_key
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - not_null
+
+      - name: email
+        tests:
+          - not_null
+
+  - name: stg_product
+    description: Product dimension
+
+    columns:
+
+      - name: product_key
+        tests:
+          - unique
+          - not_null
+
+      - name: product_id
+        tests:
+          - not_null
+
+  - name: stg_date
+    description: Date dimension
+
+    columns:
+
+      - name: date_key
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_sales
+    description: Sales fact
+
+    columns:
+
+      - name: order_item_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_key
+        tests:
+          - relationships:
+              to: ref('stg_customer')
+              field: customer_key
+
+      - name: product_key
+        tests:
+          - relationships:
+              to: ref('stg_product')
+              field: product_key
+
+      - name: date_key
+        tests:
+          - relationships:
+              to: ref('stg_date')
+              field: date_key
