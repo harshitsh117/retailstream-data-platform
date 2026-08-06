@@ -1,60 +1,34 @@
-"""
-Master Pipeline Runner.
-
-Runs the complete RetailStream platform:
-    Bronze -> Silver -> Gold
-"""
-
-from src.bronze.bronze_pipeline import BronzePipeline
-from src.silver.silver_pipeline import SilverPipeline
-from src.silver.customer_transformer import CustomerTransformer
+from src.bronze.spark_bronze_pipeline import SparkBronzePipeline
+from src.silver.spark_customer_transformer import SparkCustomerTransformer
+from src.silver.spark_order_items_transformer import SparkOrderItemsTransformer
+from src.silver.spark_orders_transformer import SparkOrdersTransformer
+from src.silver.spark_product_transformer import SparkProductTransformer
+from src.silver.spark_silver_pipeline import SparkSilverPipeline
 from src.gold.spark_gold_pipeline import SparkGoldPipeline
 
 
 def main():
-
     print("=" * 80)
-    print("RetailStream Pipeline Started")
+    print("RetailStream Data Platform")
     print("=" * 80)
 
-    # ------------------------------------------------------------------
-    # Bronze
-    # ------------------------------------------------------------------
+    print("\n[1/3] Running Bronze Pipeline...")
+    SparkBronzePipeline().run()
 
-    print("\nRunning Bronze Pipeline...")
+    print("\n[2/3] Running Silver Pipeline...")
+    silver = SparkSilverPipeline()
 
-    BronzePipeline().run()
-
-    print("Bronze Completed.")
-
-    # ------------------------------------------------------------------
-    # Silver
-    # ------------------------------------------------------------------
-
-    print("\nRunning Silver Pipeline...")
-
-    silver = SilverPipeline()
-
-    silver.register(
-        "customers",
-        CustomerTransformer(),
-    )
+    silver.register("customers", SparkCustomerTransformer())
+    silver.register("products", SparkProductTransformer())
+    silver.register("orders", SparkOrdersTransformer())
+    silver.register("order_items", SparkOrderItemsTransformer())
 
     silver.run()
 
-    print("Silver Completed.")
-
-    # ------------------------------------------------------------------
-    # Gold
-    # ------------------------------------------------------------------
-
-    print("\nRunning Gold Pipeline...")
-
+    print("\n[3/3] Running Gold Pipeline...")
     SparkGoldPipeline().run()
 
-    print("Gold Completed.")
-
-    print("\nRetailStream Pipeline Finished Successfully.")
+    print("\n✅ RetailStream pipeline completed successfully.")
 
 
 if __name__ == "__main__":
