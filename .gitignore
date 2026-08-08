@@ -36,3 +36,7 @@ Thumbs.db
 
 # Temporary
 *.zip
+datasets/bronze/
+datasets/silver/
+datasets/gold/
+datasets/test_spark_output/
