@@ -1,32 +1,42 @@
-# Virtual Environment
-.venv/
+# Logs
+logs/
+*.log
 
 # Python
 __pycache__/
 *.py[cod]
-*.egg-info/
+.pytest_cache/
+
+# Virtual Environments
+.venv/
+venv/
+
+# dbt
+dbt/**/target/
+dbt/**/logs/
+dbt/**/dbt_packages/
+
+# Spark
+spark-warehouse/
+.metastore_db/
+
+# Airflow
+airflow/logs/
+
+# IDE
+.vscode/
+.idea/
 
 # Environment
 .env
 
-# IDE
-.idea/
-.vscode/
-
-# Pytest
-.pytest_cache/
-
-# Coverage
-.coverage
-htmlcov/
-
-# Build
-dist/
-build/
-
-# Logs
-logs/
-
 # OS
 .DS_Store
 Thumbs.db
+
+# Temporary
+*.zip
+datasets/bronze/
+datasets/silver/
+datasets/gold/
+datasets/test_spark_output/

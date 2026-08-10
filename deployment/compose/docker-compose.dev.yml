@@ -1,0 +1,84 @@
+services:
+  spark:
+    build:
+      context: ../..
+      dockerfile: deployment/spark/Dockerfile
+
+    container_name: retailstream-spark
+
+    working_dir: /workspace
+
+    volumes:
+      - ../../:/workspace
+
+    stdin_open: true
+    tty: true
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+
+    container_name: retailstream-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: retailstream
+      POSTGRES_USER: retailstream
+      POSTGRES_PASSWORD: retailstream
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  dbt:
+    build:
+      context: ../..
+      dockerfile: deployment/dbt/Dockerfile
+
+    container_name: retailstream-dbt
+
+    working_dir: /workspace
+
+    volumes:
+      - ../../:/workspace
+
+    depends_on:
+      - postgres
+
+    stdin_open: true
+    tty: true
+
+  superset:
+    build:
+      context: ../..
+      dockerfile: deployment/superset/Dockerfile
+
+    container_name: retailstream-superset
+
+    restart: unless-stopped
+
+    working_dir: /workspace
+
+    ports:
+      - "8088:8088"
+
+    environment:
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+
+    volumes:
+      - ../../:/workspace
+      - ../../deployment/superset:/app/pythonpath
+
+    depends_on:
+      - postgres
+
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:

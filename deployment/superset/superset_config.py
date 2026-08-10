@@ -1,0 +1,1 @@
+SECRET_KEY = "retailstream-secret-key"
