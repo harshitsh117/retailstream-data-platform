@@ -470,7 +470,7 @@ Before getting started, ensure the following tools are installed:
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/<your-github-username>/retailstream-data-platform.git
+git clone https://github.com/harshitsh117/retailstream-data-platform.git
 
 cd retailstream-data-platform
 ```
@@ -527,10 +527,9 @@ python scripts/run_pipeline.py
 Or execute each stage individually.
 
 ```bash
-python scripts/run_bronze.py
-
-python scripts/run_silver.py
-
+python scripts/run_spark_bronze.py
+python scripts/run_spark_silver.py
+python scripts/run_spark_gold.py
 python scripts/run_warehouse.py
 ```
 

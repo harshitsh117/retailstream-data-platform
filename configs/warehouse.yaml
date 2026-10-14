@@ -3,8 +3,8 @@ warehouse:
   port: 5432
 
   database: retailstream
-  username: retailstream
-  password: retailstream
+  username: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
 
   jdbc_driver: org.postgresql.Driver
   jdbc_url: jdbc:postgresql://postgres:5432/retailstream

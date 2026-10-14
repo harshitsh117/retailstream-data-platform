@@ -5,6 +5,7 @@ from src.silver.spark_orders_transformer import SparkOrdersTransformer
 from src.silver.spark_product_transformer import SparkProductTransformer
 from src.silver.spark_silver_pipeline import SparkSilverPipeline
 from src.gold.spark_gold_pipeline import SparkGoldPipeline
+from src.warehouse.spark_warehouse_pipeline import SparkWarehousePipeline
 
 
 def main():
@@ -12,10 +13,10 @@ def main():
     print("RetailStream Data Platform")
     print("=" * 80)
 
-    print("\n[1/3] Running Bronze Pipeline...")
+    print("\n[1/4] Running Bronze Pipeline...")
     SparkBronzePipeline().run()
 
-    print("\n[2/3] Running Silver Pipeline...")
+    print("\n[2/4] Running Silver Pipeline...")
     silver = SparkSilverPipeline()
 
     silver.register("customers", SparkCustomerTransformer())
@@ -25,11 +26,13 @@ def main():
 
     silver.run()
 
-    print("\n[3/3] Running Gold Pipeline...")
+    print("\n[3/4] Running Gold Pipeline...")
     SparkGoldPipeline().run()
 
-    print("\n✅ RetailStream pipeline completed successfully.")
+    print("\n[4/4] Loading Warehouse...")
+    SparkWarehousePipeline().run()
 
+    print("\nRetailStream pipeline completed successfully.")
 
 if __name__ == "__main__":
     main()
