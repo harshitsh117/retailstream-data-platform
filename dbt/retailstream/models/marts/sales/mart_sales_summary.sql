@@ -20,8 +20,9 @@ SELECT
     ) AS total_tax,
 
     ROUND(
-        SUM(s.grand_total)::numeric,
-        2
+        SUM(s.grand_total)
+        /
+        NULLIF(COUNT(DISTINCT s.order_id), 0)
     ) AS total_revenue,
 
     ROUND(

@@ -31,4 +31,4 @@ class DockerExecutor:
         """
         Execute a Python script inside the Spark container.
         """
-        self.run(f"python3 {script_name}")
+        self.run(f"python3 scripts/{script_name}")

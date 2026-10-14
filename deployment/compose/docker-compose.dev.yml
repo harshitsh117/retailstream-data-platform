@@ -17,6 +17,10 @@ services:
     depends_on:
       - postgres
 
+    environment:
+      POSTGRES_USER: retailstream
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
   postgres:
     image: postgres:16
 
@@ -27,13 +31,20 @@ services:
     environment:
       POSTGRES_DB: retailstream
       POSTGRES_USER: retailstream
-      POSTGRES_PASSWORD: retailstream
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
     ports:
       - "5432:5432"
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ../postgres/init:/docker-entrypoint-initdb.d
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retailstream -d retailstream"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   dbt:
     build:
@@ -69,6 +80,7 @@ services:
 
     environment:
       SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
 
     volumes:
       - ../../:/workspace
@@ -79,6 +91,110 @@ services:
 
     stdin_open: true
     tty: true
+
+  airflow-init:
+    build:
+      context: ../..
+      dockerfile: deployment/airflow/Dockerfile
+
+    container_name: retailstream-airflow-init
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailstream:${POSTGRES_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW_ADMIN_USERNAME: ${AIRFLOW_ADMIN_USERNAME}
+      AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+      AIRFLOW_ADMIN_EMAIL: ${AIRFLOW_ADMIN_EMAIL}
+      PYTHONPATH: /workspace
+
+    volumes:
+      - ../../:/workspace
+      - ../../airflow/dags:/opt/airflow/dags
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        airflow db migrate
+        if airflow users list | grep -Fq "$$AIRFLOW_ADMIN_USERNAME"; then
+          echo "Airflow admin user already exists."
+        else
+          airflow users create \
+            --username "$$AIRFLOW_ADMIN_USERNAME" \
+            --firstname RetailStream \
+            --lastname Admin \
+            --role Admin \
+            --email "$$AIRFLOW_ADMIN_EMAIL" \
+            --password "$$AIRFLOW_ADMIN_PASSWORD"
+        fi
+
+  airflow-webserver:
+    build:
+      context: ../..
+      dockerfile: deployment/airflow/Dockerfile
+
+    container_name: retailstream-airflow-webserver
+
+    restart: unless-stopped
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailstream:${POSTGRES_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      PYTHONPATH: /workspace
+
+    volumes:
+      - ../../:/workspace
+      - ../../airflow/dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+    command: webserver
+
+  airflow-scheduler:
+    build:
+      context: ../..
+      dockerfile: deployment/airflow/Dockerfile
+
+    container_name: retailstream-airflow-scheduler
+
+    restart: unless-stopped
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailstream:${POSTGRES_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      PYTHONPATH: /workspace
+
+    volumes:
+      - ../../:/workspace
+      - ../../airflow/dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+    command: scheduler
 
 volumes:
   postgres_data:
